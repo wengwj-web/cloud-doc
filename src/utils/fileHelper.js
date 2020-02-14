@@ -1,15 +1,17 @@
-const fs = require('fs').promises
-const path = require('path')
+const fs = window.require('fs').promises
+const path = window.require('path')
 
 
 const fileHelper = {
-  readFile: (path, cb) => {
+  readFile: (path) => {
     return fs.readFile(path, { encoding: 'utf8' })
   },
-  writeFile: (path, content, cb) => {
+  writeFile: (path, content) => {
+    console.log(path,content)
     return fs.writeFile(path, content, { encoding: 'utf8' })
   },
   renameFile: (path, newPath) => {
+    console.log(path, newPath)
     return fs.rename(path, newPath)
   },
   deleteFile: (path) => {
@@ -17,9 +19,9 @@ const fileHelper = {
   }
 }
 
-const testPath = path.join(__dirname, 'helper.js')
-const testWritePath = path.join(__dirname, 'hello.md')
-const renamePath = path.join(__dirname, 'rename.md')
+// const testPath = path.join(__dirname, 'helper.js')
+// const testWritePath = path.join(__dirname, 'hello.md')
+// const renamePath = path.join(__dirname, 'rename.md')
 // fileHelper.readFile(testPath).then((data) => {
 //   console.log(data)
 // })
@@ -31,7 +33,8 @@ const renamePath = path.join(__dirname, 'rename.md')
 //   console.log('重命名成功')
 // })
 
-fileHelper.deleteFile(renamePath).then(()=>{
-  console.log('删除成功')
-})
+// fileHelper.deleteFile(renamePath).then(()=>{
+//   console.log('删除成功')
+// })
 
+export default fileHelper
