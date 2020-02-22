@@ -30,14 +30,14 @@ const settingsStore = new Store({ name: 'Settings' })
 const getAutoSync = () => ['accessKey', 'secretKey', 'bucketName', 'enableAutoSync'].every(key => !!settingsStore.get(key))
 const saveFilesToStore = (files) => {
   const fileStoreObj = objToArr(files).reduce((result, file) => {
-    const { id, path, title, createdAt, isSynced, updateAt } = file
+    const { id, path, title, createdAt, isSynced, updatedAt } = file
     result[id] = {
       id,
       path,
       title,
       createdAt,
       isSynced,
-      updateAt
+      updatedAt
     }
     return result
   }, {})
@@ -63,12 +63,20 @@ function App() {
   const fileClick = (fileID) => {
     setActiveFileID(fileID)
     const currentFile = files[fileID]
-    console.log(currentFile)
-    if (!currentFile.isLoaded) {
-      fileHelper.readFile(currentFile.path).then(value => {
-        const newFile = { ...files[fileID], body: value, isLoaded: true }
-        setFiles({ ...files, [fileID]: newFile })
-      })
+    const { id, title, path, isLoaded } = currentFile
+    if (!isLoaded) {
+      if (getAutoSync()) {
+        ipcRenderer.send('download-file', {
+          key: `${title}.md`,
+          path,
+          id
+        })
+      } else {
+        fileHelper.readFile(currentFile.path).then(value => {
+          const newFile = { ...files[fileID], body: value, isLoaded: true }
+          setFiles({ ...files, [fileID]: newFile })
+        })
+      }
     }
     if (!openedFileIDs.includes(fileID)) {
       setOpenedFileIDs([...openedFileIDs, fileID])
@@ -220,17 +228,36 @@ function App() {
   }
   const activeFileUploaded = () => {
     const { id } = activeFile
-    const modifiedFile = { ...files[id], isSynced: true, updateAt: new Date().getTime() }
+    const modifiedFile = { ...files[id], isSynced: true, updatedAt: new Date().getTime() }
     const newFiles = { ...files, [id]: modifiedFile }
     setFiles(newFiles)
     saveFilesToStore(newFiles)
+  }
+  const activeFileDownloaded = (event, message) => {
+    const currentFile = files[message.id]
+    const { id, path } = currentFile
+    fileHelper.readFile(path).then(value => {
+      let newFile
+      if (message.status === 'download-success') {
+        newFile = {
+          ...files[id], body: value, isLoaded: true, isSynced: true,
+          updatedAt: new Date().getTime()
+        }
+      } else {
+        newFile = { ...files[id], body: value, isLoaded: true }
+      }
+      const newFiles = { ...files, [id]: newFile }
+      setFiles(newFiles)
+      saveFilesToStore(newFiles)
+    })
   }
   useIpcRenderer({
     'create-new-file': createNewFile,
     'import-file': importFiles,
     'save-edit-file': saveCurrentFile,
     'search-file': fileSearch,
-    'active-file-uploaded': activeFileUploaded
+    'active-file-uploaded': activeFileUploaded,
+    'file-downloaded': activeFileDownloaded
   })
   return (
     <div className="App container-fluid px-0">

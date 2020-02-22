@@ -6,6 +6,7 @@ const menuTemplate = require('./src/menuTemplate')
 const Store = require('electron-store')
 const QiniuManager = require('./src/utils/QiniuManager')
 const settingsStore = new Store({ name: 'Settings' })
+const fileStore = new Store({ name: 'Files Data' })
 let mainWindow, settingsWindow
 
 const createManager = () => {
@@ -48,6 +49,31 @@ app.on('ready', () => {
       mainWindow.webContents.send('active-file-uploaded')
     }).catch(() => {
       dialog.showErrorBox('同步失败', '请检查七牛云参数是否正确')
+    })
+  })
+  ipcMain.on('download-file', (event, data) => {
+    const manager = createManager()
+    const filesObj = fileStore.get('files')
+    const { key, path, id } = data
+    manager.getStat(data.key).then((resp) => {
+      const serverUpdatedTime = Math.round(resp.putTime / 10000)
+      console.log('qiniu', serverUpdatedTime)
+      const localUpdatedTime = filesObj[id].updatedAt
+      console.log('local', localUpdatedTime)
+      if (serverUpdatedTime > localUpdatedTime || !localUpdatedTime) {
+        console.log('new file downloaded')
+        manager.downloadFile(key, path).then(() => {
+          mainWindow.webContents.send('file-downloaded', { status: 'download-success', id })
+        })
+      } else {
+        console.log('no new file')
+        mainWindow.webContents.send('file-downloaded', { status: 'no-new-file', id })
+      }
+    }, (error) => {
+      console.log(error)
+      if (error.statusCode === 612) {
+        mainWindow.webContents.send('file-downloaded', { status: 'no-file', id })
+      }
     })
   })
   ipcMain.on('config-is-saved', () => {

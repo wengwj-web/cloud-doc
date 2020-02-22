@@ -6,7 +6,7 @@ const QiniuManager = require('./src/utils/QiniuManager')
 var accessKey = '2frdri7jB0brSIDaMnawbFAOYYYlXcVpuVj49Z6s';
 var secretKey = 'x6cHiLtyNHe268AN8RwcSpUuKjZHuaib5aCmeh87';
 var localFile = "C:/Users/wwj/Documents/hello.md";
-var key = 'abc.md';
+var key = 'first 1.md';
 const downloadPath = path.join(__dirname, key)
 const manager = new QiniuManager(accessKey, secretKey, 'clouddocs')
 // manager.uploadFile(key, localFile).then((data) => {
@@ -24,8 +24,8 @@ const manager = new QiniuManager(accessKey, secretKey, 'clouddocs')
 // }).then(data => {
 //   console.log(data)
 // })
-manager.downloadFile(key, downloadPath).then(() => {
-  console.log('下载写入文件完毕')
-})
+// manager.downloadFile(key, downloadPath).then(() => {
+//   console.log('下载写入文件完毕')
+// })
 // manager.deleteFile(key)
 // var publicBucketDomain = 'http://q619af51y.bkt.clouddn.com';
