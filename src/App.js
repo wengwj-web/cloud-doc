@@ -12,6 +12,7 @@ import FileList from './components/FileList'
 import BottonBtn from './components/BottomBtn'
 import TabList from './components/TabList'
 import defaultFiles from './utils/defaultFiles'
+import Loader from './components/Loader'
 import useIpcRenderer from './hooks/useIpcRenderer'
 const { join, basename, extname, dirname } = window.require('path')
 const { remote, ipcRenderer } = window.require('electron')
@@ -51,6 +52,7 @@ function App() {
   const [openedFileIDs, setOpenedFileIDs] = useState([])
   const [unsavedFileIDs, setUnsavedFileIDs] = useState([])
   const [searchFiles, setSearchFiles] = useState([])
+  const [isLoading, setLoading] = useState(false)
   const fileArr = objToArr(files)
   const saveLocation = remote.app.getPath('documents')
   const activeFile = files[activeFileID]
@@ -257,10 +259,14 @@ function App() {
     'save-edit-file': saveCurrentFile,
     'search-file': fileSearch,
     'active-file-uploaded': activeFileUploaded,
-    'file-downloaded': activeFileDownloaded
+    'file-downloaded': activeFileDownloaded,
+    'loading-status': (message, status) => {
+      setLoading(status)
+    }
   })
   return (
     <div className="App container-fluid px-0">
+      {isLoading && <Loader />}
       <div className="row no-gutters">
         <div className="col-3 bg-light left-panel">
           <FileSearch onFileSearch={fileSearch} />
