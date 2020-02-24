@@ -1,5 +1,6 @@
 const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron')
 const isDev = require('electron-is-dev')
+const { autoUpdater } = require('electron-updater')
 const path = require('path')
 const AppWindow = require('./src/AppWindow')
 const menuTemplate = require('./src/menuTemplate')
@@ -16,15 +17,71 @@ const createManager = () => {
   return new QiniuManager(accessKey, secretKey, bucketName)
 }
 app.on('ready', () => {
-  mainWindow = new BrowserWindow({
-    width: 1024,
-    height: 600,
-    webPreferences: {
-      nodeIntegration: true
-    }
-  })
+  // 更新相关
+  // if (isDev) {
+  //   autoUpdater.updateConfigPath = path.join(__dirname, 'dev-app-update.yml')
+  // }
+  // autoUpdater.autoDownload = false
+  // autoUpdater.checkForUpdates()
+  // autoUpdater.checkForUpdatesAndNotify()
+  // autoUpdater.on('error', (error) => {
+  //   dialog.showErrorBox('Error:', error == null ? "unknown" : (error))
+  // })
+  // autoUpdater.on('checking-for-update', () => {
+  //   console.log('Checking for update ...')
+  // })
+  // autoUpdater.on('update-available', () => {
+  //   dialog.showMessageBox({
+  //     type: 'info',
+  //     title: '应用有新的版本',
+  //     message: '发现新版本，是否现在更新?',
+  //     buttons: ['是', '否']
+  //   }, (buttonIndex) => {
+  //     if (buttonIndex === 0) {
+  //       autoUpdater.downloadUpdate()
+  //     }
+  //   })
+  // })
+  // autoUpdater.on('update-not-available', () => {
+  //   dialog.showMessageBox({
+  //     title: '没有新版本',
+  //     message: '当前已经是最新版本'
+  //   })
+  // })
+  // autoUpdater.on('download-progress', (progressObj) => {
+  //   let log_message = "Download speed: " + progressObj.bytesPerSecond;
+  //   log_message = log_message + ' - Download ' + progressObj.percent + '%'
+  //   log_message = log_message + ' (' + progressObj.transferred + '/' + progressObj.total + ''
+  //   console.log(log_message)
+  // })
+  // autoUpdater.on('update-downloaded', () => {
+  //   dialog.showMessageBox({
+  //     title: '安装成功',
+  //     message: '更新下载完毕，应用将重启并进行安装'
+  //   }, () => {
+  //     setImmediate(() => autoUpdater.quitAndInstall())
+  //   })
+  // })
+
+  // mainWindow = new BrowserWindow({
+  //   width: 1024,
+  //   height: 600,
+  //   webPreferences: {
+  //     nodeIntegration: true
+  //   }
+  // })
+
+  const mainWindowConfig = {
+    width: 1440,
+    height: 768,
+  }
+
   const urlLocation = isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, './index.html')}`
-  mainWindow.loadURL(urlLocation)
+  // mainWindow.loadURL(urlLocation)
+  mainWindow = new AppWindow(mainWindowConfig, urlLocation)
+  mainWindow.on('closed', () => {
+    mainWindow = null
+  })
   mainWindow.webContents.openDevTools()
 
   let menu = Menu.buildFromTemplate(menuTemplate)

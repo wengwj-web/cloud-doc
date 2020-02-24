@@ -22,6 +22,8 @@
     "dev": "concurrently \"wait-on http://localhost:3000 && electron .\" \"cross-env BROWSER=none npm start\"",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
+    "release": "cross-env GH_TOKEN=c8c71e7a3a6a8ed7edd8e9fd4642b68df1031c37 electron-builder",
+    "prerelease": "npm run build && npm run buildMain",
     "prepack": "npm run build && npm run buildMain",
     "predist": "npm run build && npm run buildMain"
   },
@@ -42,7 +44,9 @@
     "extraMetadata": {
       "main": "./build/main.js"
     },
-    "publish": ["github"],
+    "publish": [
+      "github"
+    ],
     "extends": null,
     "mac": {
       "category": "public.app-category.productivity",
@@ -118,6 +122,7 @@
     "electron": "^7.1.13",
     "electron-builder": "^22.3.2",
     "electron-is-dev": "^1.1.0",
+    "electron-updater": "^4.2.2",
     "node-sass": "^4.13.1",
     "qiniu": "^7.3.0",
     "react": "^16.12.0",
