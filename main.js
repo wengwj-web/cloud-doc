@@ -23,7 +23,7 @@ app.on('ready', () => {
       nodeIntegration: true
     }
   })
-  const urlLocation = isDev ? 'http://localhost:3000' : 'dummyurl'
+  const urlLocation = isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, './build/index.html')}`
   mainWindow.loadURL(urlLocation)
   mainWindow.webContents.openDevTools()
 
@@ -76,10 +76,10 @@ app.on('ready', () => {
       }
     })
   })
-  ipcMain.on('upload-all-to-qiniu',()=>{
-    mainWindow.webContents.send('loading-status',true)
+  ipcMain.on('upload-all-to-qiniu', () => {
+    mainWindow.webContents.send('loading-status', true)
     setTimeout(() => {
-      mainWindow.webContents.send('loading-status',false)
+      mainWindow.webContents.send('loading-status', false)
     }, 2000);
   })
   ipcMain.on('config-is-saved', () => {
