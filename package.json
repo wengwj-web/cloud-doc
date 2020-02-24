@@ -9,56 +9,80 @@
     "email": "386010929@qq.com"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.26",
-    "@fortawesome/free-brands-svg-icons": "^5.12.0",
-    "@fortawesome/free-solid-svg-icons": "^5.12.0",
-    "@fortawesome/react-fontawesome": "^0.1.8",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "axios": "^0.19.2",
     "bootstrap": "^4.4.1",
-    "classnames": "^2.2.6",
-    "electron-is-dev": "^1.1.0",
-    "electron-store": "^5.1.0",
-    "node-sass": "^4.13.1",
-    "qiniu": "^7.3.0",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "react-scripts": "3.3.0",
-    "react-simplemde-editor": "^4.1.0",
-    "uuid": "^3.4.0"
+    "electron-store": "^5.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "buildMain": "webpack",
     "onlyEle": "nodemon --watch main.js --watch src/menuTemplate.js --exec \"electron .\"",
     "dev": "concurrently \"wait-on http://localhost:3000 && electron .\" \"cross-env BROWSER=none npm start\"",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
-    "prepack": "npm run build"
+    "prepack": "npm run build && npm run buildMain",
+    "predist": "npm run build && npm run buildMain"
   },
   "homepage": "./",
   "build": {
     "appId": "cloudDoc",
     "productName": "七牛云文档",
     "copyright": "Copyright © 2020 ${author}",
-    "extends": null,
-    "electronDownload": {
-      "mirror": "https://npm.taobao.org/mirrors/electron/"
-    },
     "files": [
       "build/**/*",
       "node_modules/**/*",
       "settings/**/*",
-      "package.json",
-      "main.js",
-      "./src/menuTemplate.js",
-      "./src/AppWindow.js",
-      "./src/utils/QiniuManager.js"
-    ]
+      "package.json"
+    ],
+    "extraMetadata": {
+      "main": "./build/main.js"
+    },
+    "extends": null,
+    "mac": {
+      "category": "public.app-category.productivity",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "dmg": {
+      "background": "assets/appdmg.png",
+      "icon": "assets/icon.icns",
+      "iconSize": 100,
+      "contents": [
+        {
+          "x": 380,
+          "y": 280,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 110,
+          "y": 280,
+          "type": "file"
+        }
+      ],
+      "window": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    "win": {
+      "target": [
+        "msi",
+        "nsis"
+      ],
+      "icon": "assets/icon.ico",
+      "artifactName": "${productName}-Web-Setup-${version}.${ext}",
+      "publisherName": "Viking Zhang"
+    },
+    "nsis": {
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false,
+      "perMachine": false
+    },
+    "electronDownload": {
+      "mirror": "https://npm.taobao.org/mirrors/electron/"
+    }
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -76,10 +100,27 @@
     ]
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.26",
+    "@fortawesome/free-brands-svg-icons": "^5.12.0",
+    "@fortawesome/free-solid-svg-icons": "^5.12.0",
+    "@fortawesome/react-fontawesome": "^0.1.8",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "axios": "^0.19.2",
+    "classnames": "^2.2.6",
     "concurrently": "^5.0.2",
     "cross-env": "^6.0.3",
     "electron": "^7.1.13",
     "electron-builder": "^22.3.2",
+    "electron-is-dev": "^1.1.0",
+    "node-sass": "^4.13.1",
+    "qiniu": "^7.3.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-scripts": "3.3.0",
+    "react-simplemde-editor": "^4.1.0",
+    "uuid": "^3.4.0",
     "wait-on": "^3.3.0"
   }
 }

@@ -23,7 +23,7 @@ app.on('ready', () => {
       nodeIntegration: true
     }
   })
-  const urlLocation = isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, './build/index.html')}`
+  const urlLocation = isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, './index.html')}`
   mainWindow.loadURL(urlLocation)
   mainWindow.webContents.openDevTools()
 
